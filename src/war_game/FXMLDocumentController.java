@@ -53,51 +53,35 @@ public class FXMLDocumentController implements Initializable {
     private Label message2;
     @FXML
     private Label result;
+    @FXML
+    private Button btnwar;
     
     Player p1;
     Player p2;
     boolean gameOver;
+    Card c1;
+    Card c2;
+    boolean war;
     
 
     @FXML
     private void handleButtonAction(ActionEvent event){
-        start.setText("Continue");
-        //do {
-
-            boolean war = false;
-
-            Card c1 = p1.playCard();
-            Card c2 = p2.playCard();
+            start.setText("Continue");
+        
+            war = false;
+            
+            c1 = p1.playCard();
+            c2 = p2.playCard();
 
             cards1.setText(c1.toString());
             cards2.setText(c2.toString());
 
             war = c1.getValue().ordinal() == c2.getValue().ordinal();
-
-            while (war == true) {
+            
+            if (war == true){
                 warlabel.setText("WAR!!!");
-                p1.WarDiscard();
-                p2.WarDiscard();
-
-                message1.setText("Both Players drop 3 more card face down and play a new card");
-
-                c1 = p1.playCard();
-                c2 = p2.playCard();
-
-                cards1.setText(c1.toString());
-                cards2.setText(c2.toString());
-                
-                if (c1.getValue().ordinal() > c2.getValue().ordinal()) {
-                    p1.warWin();
-                    message2.setText("Player 1 Wins 8 points!");
-
-                    war = false;
-                } else if (c1.getValue().ordinal() < c2.getValue().ordinal()) {
-                    p2.warWin();
-                    message2.setText("Player 2 Wins 8 points!");
-                    war = false;
-                }
-
+                start.setVisible(false);
+                btnwar.setVisible(true);
             }
 
             if (war == false) {
@@ -133,6 +117,49 @@ public class FXMLDocumentController implements Initializable {
         //} while (gameOver == false);
     }
     
+    @FXML
+    private void warButtonAction(ActionEvent event1){
+                
+                p1.WarDiscard();
+                p2.WarDiscard();
+
+                message1.setText("Both Players drop 3 more card face down and play a new card.");
+
+                c1 = p1.playCard();
+                c2 = p2.playCard();
+
+                cards1.setText(c1.toString());
+                cards2.setText(c2.toString());
+                
+                if (c1.getValue().ordinal() > c2.getValue().ordinal()) {
+                    p1.warWin();
+                    message2.setText("Player 1 Wins 8 points!");
+                    war = false;
+                    start.setVisible(true);
+                    btnwar.setVisible(false);
+                } else if (c1.getValue().ordinal() < c2.getValue().ordinal()) {
+                    p2.warWin();
+                    message2.setText("Player 2 Wins 8 points!");
+                    war = false;
+                    start.setVisible(true);
+                    btnwar.setVisible(false);
+                }
+                
+                points1.setText("" + p1.getPoints());
+                points2.setText("" + p2.getPoints());
+
+                if (p1.getPoints() >= 26) {
+                    result.setText("Player 1 WINS THE GAME!!!");
+                    gameOver = true;
+                    start.setVisible(false);
+                } else if (p2.getPoints() >= 26) {
+                    result.setText("Player 2 WINS THE GAME!!!");
+                    gameOver = true;
+                    start.setVisible(false);
+                }
+    }
+    
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         gameOver = false;
@@ -143,6 +170,10 @@ public class FXMLDocumentController implements Initializable {
 
         p1 = new Player(hand1);
         p2 = new Player(hand2);
+        
+        btnwar.setVisible(false);
+        
+        message1.setWrapText(true);
     }    
     
 }
